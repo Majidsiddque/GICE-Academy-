@@ -1,0 +1,65 @@
+# =====================================================================
+#  GICE Academy - clean URLs (no .html / .php in the address bar)
+#  /nda-coaching.html -> /nda-coaching     /blog.php -> /blog
+#  /admin/login.php   -> /admin/login
+# =====================================================================
+Options -MultiViews
+DirectoryIndex index.html index.php
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# --- blog / current-affairs post URLs ---------------------------------
+RewriteRule ^blog/([A-Za-z0-9-]+)/?$ post.php?slug=$1 [L,QSA]
+RewriteRule ^current-affairs/([A-Za-z0-9-]+)/?$ post.php?slug=$1 [L,QSA]
+RewriteRule ^notification/([A-Za-z0-9-]+)/?$ post.php?slug=$1 [L,QSA]
+
+# --- old short page names -> the real page names (301) ----------------
+RewriteRule ^cat/?$       /cat-coaching [R=301,L]
+RewriteRule ^nda/?$       /nda-coaching [R=301,L]
+RewriteRule ^cds/?$       /cds-coaching [R=301,L]
+RewriteRule ^clat/?$      /clat-coaching [R=301,L]
+RewriteRule ^mba-cet/?$   /mba-cet-coaching [R=301,L]
+RewriteRule ^mca/?$       /mca-entrance-coaching [R=301,L]
+RewriteRule ^imu-cet/?$   /imu-cet-coaching [R=301,L]
+RewriteRule ^law-cet/?$   /law-cet-coaching [R=301,L]
+RewriteRule ^upsc/?$      /upsc-coaching [R=301,L]
+RewriteRule ^mpsc/?$      /mpsc-coaching [R=301,L]
+RewriteRule ^railway/?$   /railway-exam-coaching [R=301,L]
+RewriteRule ^insurance/?$ /insurance-exam-coaching [R=301,L]
+RewriteRule ^rbi/?$       /rbi-exam [R=301,L]
+RewriteRule ^cgl/?$       /ssc-cgl [R=301,L]
+RewriteRule ^chsl/?$      /ssc-chsl [R=301,L]
+RewriteRule ^mts/?$       /ssc-mts-coaching [R=301,L]
+RewriteRule ^nmat/?$      /nmat-snap-gmat [R=301,L]
+RewriteRule ^xat/?$       /xat-ibsat-cmat [R=301,L]
+# file has capital letters (Linux is case-sensitive)
+RewriteRule ^top50mbacollege/?$ /top50MBAcollege [R=301,L]
+
+# --- 1) /page.html or /page.php typed/bookmarked -> clean URL (301) ----
+#     GET/HEAD only, so form posts are never turned into GETs
+RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/+[^?\s]*\.(html|php)[\s?] [NC]
+RewriteRule ^(.*/)?index\.(html|php)$ /$1 [R=301,L,NC]
+
+RewriteCond %{REQUEST_METHOD} ^(GET|HEAD)$
+RewriteCond %{THE_REQUEST} \s/+[^?\s]*\.(html|php)[\s?] [NC]
+RewriteRule ^(.+)\.(html|php)$ /$1 [R=301,L,NC]
+
+# --- 2) /page/ -> /page when such a page exists ------------------------
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/$1.php -f [OR]
+RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# --- 3) serve the real file behind the clean URL (.php first, then .html)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^(.+)$ $1.html [L]
+</IfModule>
