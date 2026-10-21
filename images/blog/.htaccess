@@ -1,0 +1,6 @@
+# uploads: never execute scripts here
+php_flag engine off
+RemoveHandler .php .phtml .php3 .php5
+<FilesMatch "\.(php|phtml|phar)$">
+Require all denied
+</FilesMatch>
